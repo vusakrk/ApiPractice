@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 
 namespace ApiPractice.Models
 {
-    public class Book:BaseEntity
+    public abstract class BaseEntity
     {
-        public string Title { get; set; }
-        public List<BookAuthor> BookAuthor { get; set; }
+        public int Id { get; set; }
     }
 }

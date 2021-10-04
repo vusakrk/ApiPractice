@@ -1,5 +1,7 @@
 ﻿using ApiPractice.DAL;
+using ApiPractice.DTO;
 using ApiPractice.Models;
+using ApiPractice.Services.Interface;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -14,28 +16,25 @@ namespace ApiPractice.Controllers
     [ApiController]
     public class BookController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IBookService _bookService;
 
-        public BookController(AppDbContext context)
+        public BookController(IBookService bookService)
         {
-            _context = context;
+            _bookService = bookService;
         }
         // GET: api/<BookController>
         [HttpGet]
-        public ActionResult Get()
+        public ActionResult GetBooks()
         {
-            var book = _context.Books.ToList();
-            if (book == null)
-                return NotFound();
-            return Ok(book);
+            return Ok(_bookService.GetBooks());
         }
 
         // GET api/<BookController>/5
         [HttpGet]
         [Route("{id}")]
-        public ActionResult Get(int id)
+        public ActionResult GetBook(int id)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
+            var book = _bookService.GetBook(id);
             if (book == null)
                 return NotFound();
             return Ok(book);
@@ -43,27 +42,23 @@ namespace ApiPractice.Controllers
 
         // POST api/<BookController>
         [HttpPost]
-        public ActionResult Post([FromBody] Book book)
+        public ActionResult Create([FromBody] BookDTO book)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
-            _context.Books.Add(book);
-            _context.SaveChanges();
-
+            _bookService.Create(book);
             return Ok(book);
         }
 
         // PUT api/<BookController>/5
         [HttpPut]
         [Route("{id}")]
-        public ActionResult Put(int id, [FromBody] Book book)
+        public ActionResult Edit(int id, [FromBody] BookDTO book)
         {
 
-            var updateBook = _context.Books.Find(book.Id);
-            updateBook.Title = book.Title;
-            _context.Books.Update(updateBook);
-            _context.SaveChanges();
-            return Ok(book);
+            if (!ModelState.IsValid)
+                return BadRequest();
+            return Ok(_bookService.Edit(id, book));
         }
 
         //DELETE api/<BookController>/5
@@ -71,11 +66,7 @@ namespace ApiPractice.Controllers
         [Route("{id}")]
         public IActionResult Delete(int id)
         {
-            var book = _context.Books.Find(id);
-            _context.Books.Remove(book);
-            _context.SaveChanges();
-
-            return Ok(book);
+            return Ok(_bookService.Delete(id));
         }
     }
 }

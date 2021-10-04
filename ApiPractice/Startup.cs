@@ -1,4 +1,6 @@
 using ApiPractice.DAL;
+using ApiPractice.Services.Implementation;
+using ApiPractice.Services.Interface;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +34,8 @@ namespace ApiPractice
             {
                 options.UseSqlServer(Configuration.GetConnectionString("Default"));
             });
+            services.AddAutoMapper(typeof(Startup));
+            services.AddScoped<IBookService, BookService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
